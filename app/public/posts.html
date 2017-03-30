@@ -1,0 +1,105 @@
+<!-- form inputs -->
+
+
+<div class="pull-right">
+    <p><a ng-click="$ctrl.postFormToggle = !$ctrl.postFormToggle" class="btn btn-info">New Post</a></p>
+</div>
+
+<ul class="nav nav-pills">
+    <li role="presentation" class="active">
+        <input ng-model="$ctrl.filter" type="search" class="form-control input-sm search-form" placeholder="Filter">
+    </li>
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sort By<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li><a ng-click="$ctrl.sortBy = '-created_at'">Date</a></li>
+            <li><a ng-click="$ctrl.sortBy = 'title'">Title</a></li>
+            <li><a ng-click="$ctrl.sortBy = '-vote_count'">Rating</a></li>
+        </ul>
+    </li>
+</ul>
+<div class="row">
+    <div ng-hide="$ctrl.postFormToggle" class="col-md-8">
+
+        <form>
+            <div>
+                <label for="title">Title</label>
+                <input ng-model="$ctrl.post.title" id="title" class="form-control">
+            </div>
+            <div>
+                <label for="body">Body</label>
+                <textarea ng-model="$ctrl.post.body" id="body" class="form-control"></textarea>
+            </div>
+            <div>
+                <label for="author">Author</label>
+                <input ng-model="$ctrl.post.author" id="author" class="form-control">
+            </div>
+            <div>
+                <label for="image-url">Image URL</label>
+                <input ng-model="$ctrl.post.image_url" id="image-url" class="form-control">
+            </div>
+            <div class="form-group">
+                <button ng-click="$ctrl.addPost()" type="submit" class="btn btn-primary">
+          Create Post
+        </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+<!-- post body          REPEAT       -->
+<div class="row">
+    <div ng-repeat="post in $ctrl.posts | orderBy:$ctrl.sortBy" ng-show="post.title.includes($ctrl.filter)" class="col-md-12" ng-init="post.commentToggle = false">
+
+        <div class="well">
+            <div class="media-left">
+                <img class="media-object" ng-src="{{post.image_url}}">
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">
+          {{post.title}}
+          |
+          <a ng-click="$ctrl.upVote($event, post)"><i class="glyphicon glyphicon-arrow-up"></i></a>
+          <a ng-click="$ctrl.downVote($event, post)"><i class="glyphicon glyphicon-arrow-down"></i></a>
+          {{post.vote_count}}
+        </h4>
+
+                <div class="text-right">
+                    {{post.author}}
+                </div>
+                <p>
+                    {{post.body}}
+                </p>
+                <div>
+                    {{post.created_at | date:"short"}} |
+                    <i class="glyphicon glyphicon-comment"></i>
+                    <a ng-click="post.commentToggle = !post.commentToggle">
+                        <ng-pluralize count="post.comments.length || 0" when="{
+                                '0': 'No comments yet!',
+                                'one': '1 Comment',
+                                'other': '{} Comments'
+                            }">
+                        </ng-pluralize>
+
+                    </a>
+                </div>
+                <div class="row">
+                    <div class="col-md-offset-1">
+                        <hr>
+                        <p ng-show="post.commentToggle" ng-repeat="comment in post.comments">
+                            {{comment.content}}
+                        </p>
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <input ng-model="post.comment" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <input ng-click="$ctrl.addComment($event, post)" type="submit" class="btn btn-primary">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
